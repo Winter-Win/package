@@ -1,0 +1,294 @@
+﻿1、删除链表中等于给定值 val 的所有节点。https://leetcode-cn.com/problems/remove-linked-list-elements/
+示例:
+输入: 1->2->6->3->4->5->6, val = 6
+输出: 1->2->3->4->5
+
+C版本：
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+struct ListNode* removeElements(struct ListNode* head, int val) {
+    if(head == NULL)
+    {
+         return NULL;
+    }
+    
+    struct ListNode* cur = head;
+    struct ListNode* prev = NULL;
+    
+    while(cur)
+    {
+        struct ListNode* next = cur->next;
+        if(cur->val == val)
+        {
+            //如果prev还是为空的话，说明此时是在第一个
+            if(prev == NULL)
+            {
+                head = cur->next;
+            }
+            else
+            {
+                prev->next = cur->next;
+            }
+            free(cur);
+            cur = next;
+        }
+        else
+        {
+            prev = cur;
+            cur = cur->next;
+        }
+    }
+    return head;
+}
+
+
+2、反转一个单链表。https://leetcode-cn.com/problems/reverse-linked-list/
+示例:
+输入: 1->2->3->4->5->NULL
+输出: 5->4->3->2->1->NULL
+
+C版本：
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+struct ListNode* reverseList(struct ListNode* head) {
+    struct ListNode* cur = head;
+    struct ListNode* newnode = NULL;
+    
+    while(cur)
+    {
+        struct ListNode* next = cur->next;
+        cur->next = newnode;
+        newnode = cur;
+        cur = next;
+    }
+    return newnode;
+}
+
+
+C版本：
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+struct ListNode* reverseList(struct ListNode* head) {
+    if(head == NULL || head->next == NULL)
+        return head;
+    
+    struct ListNode *n1, *n2, *n3;
+    n1 = head;
+    n2 = n1->next;
+    n3 = n2->next;
+    n1->next = NULL;
+    while(n2)
+    {
+        n2->next = n1;
+        n1 = n2;
+        n2 = n3;
+        if(n3)
+        {
+            n3 = n3->next;
+        }
+    }
+    return n1;
+}
+
+3、给定一个带有头结点 head 的非空单链表，返回链表的中间结点。如果有两个中间结点，则返回第二个中间结点。
+https://leetcode-cn.com/problems/middle-of-the-linked-list/description/
+示例 1：
+输入：[1,2,3,4,5]
+输出：此列表中的结点 3 (序列化形式：[3,4,5])
+返回的结点值为 3 。 (测评系统对该结点序列化表述是 [3,4,5])。
+注意，我们返回了一个 ListNode 类型的对象 ans，这样：
+ans.val = 3, ans.next.val = 4, ans.next.next.val = 5, 以及 ans.next.next.next = NULL.
+
+示例 2：
+输入：[1,2,3,4,5,6]
+输出：此列表中的结点 4 (序列化形式：[4,5,6])
+由于该列表有两个中间结点，值分别为 3 和 4，我们返回第二个结点。
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+struct ListNode* middleNode(struct ListNode* head) {
+    //快慢指针
+    struct ListNode* fast = head;
+    struct ListNode* slow = head;
+    
+    while(fast && fast->next)
+    {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    return slow;
+}
+
+
+
+4、输入一个链表，输出该链表中倒数第k个结点。
+https://www.nowcoder.com/practice/529d3ae5a407492994ad2a246518148a?tpId=13&&tqId=11167&rp=2&ru=/activity/oj&qru=/ta/coding-interviews/question-ranking
+/*
+struct ListNode {
+	int val;
+	struct ListNode *next;
+	ListNode(int x) :
+			val(x), next(NULL) {
+	}
+};*/
+class Solution {
+public:
+    ListNode* FindKthToTail(ListNode* pListHead, unsigned int k) {
+        struct ListNode* fast = pListHead;
+        struct ListNode* slow = pListHead;
+        while(k--)
+        {
+            if(fast)
+                fast = fast->next;
+            else
+                return NULL;
+        }
+        
+        while(fast)
+        {
+            fast = fast->next;
+            slow = slow->next;
+        }
+        return slow;
+    }
+};
+
+
+
+5、将两个有序链表合并为一个新的有序链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
+https://leetcode-cn.com/problems/merge-two-sorted-lists/
+示例：
+输入：1->2->4, 1->3->4
+输出：1->1->2->3->4->4
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+struct ListNode* mergeTwoLists(struct ListNode* l1, struct ListNode* l2) {
+    if(l1 == NULL)
+        return l2;
+    
+    else if(l2 == NULL)
+        return l1;
+    
+    struct ListNode* head, *tail;
+    if(l1->val < l2->val)
+    {
+        head = l1;
+        l1 = l1->next;
+    }
+    else
+    {
+        head = l2;
+        l2 = l2->next;
+    }
+    
+    //拿小的尾插
+    tail = head;
+    while(l1 != NULL && l2 != NULL)
+    {
+        if(l1->val < l2->val)
+        {
+            tail->next = l1;
+            l1 = l1->next;
+        }
+        else
+        {
+            tail->next = l2;
+            l2 = l2->next;
+        }
+        tail = tail->next;
+    }
+    
+    if(l1 != NULL)
+        tail->next = l1;
+    
+    if(l2 != NULL)
+        tail->next = l2;
+    
+    return head;
+}
+
+
+
+6. 字符串相加
+https://leetcode-cn.com/problems/add-strings/
+给定两个字符串形式的非负整数 num1 和num2 ，计算它们的和。
+注意：
+（1）num1 和num2 的长度都小于 5100.
+（2）num1 和num2 都只包含数字 0-9.
+（3）num1 和num2 都不包含任何前导零。
+（4）你不能使用任何內建 BigInteger 库， 也不能直接将输入的字符串转换为整数形式。
+class Solution {
+public:
+    string addStrings(string num1, string num2) {
+        //从后往前加
+        int end1 = num1.size() - 1;
+        int end2 = num2.size() - 1;
+        int val1 = 0, val2 = 0, next = 0;
+        string addret;
+        while(end1 >= 0 || end2 >= 0)
+        {
+            //依次从里面拿出来
+            if(end1 >= 0) {
+                val1 = num1[end1--] - '0';
+            }
+            else {
+                val1 = 0;
+            }
+            
+            if(end2 >= 0) {
+                val2 = num2[end2--] - '0';
+            }
+            else {
+                val2 = 0;
+            }
+            
+            //将拿出来的两个数加起来
+            int valret = val1 + val2 + next;
+            if(valret > 9) {//判断进位
+                next = 1;
+                valret -= 10;
+            }
+            else {//这一步要处理，每次都得更新为零，也可以在后面处理
+                next = 0;
+            }
+            
+            //addret.insert(addret.begin(), valret + '0');//不建议，这是一个n方的时间复杂度
+            addret += (valret + '0');
+        }
+        
+        //还在大循环里面，如果next == 1，说明进位上来的，所以在前面出入进位的‘1’
+        if(next == 1){
+            //addret.insert(addret.begin(), '1');
+            addret += '1';
+        }
+        
+        reverse(addret.begin(), addret.end());
+        return addret;
+    }
+};
+
