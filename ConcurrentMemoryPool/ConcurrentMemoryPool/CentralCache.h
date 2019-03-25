@@ -7,7 +7,7 @@
 class CentralCache
 {
 public:
-	static CentralCache* Getinstance()
+	static CentralCache* Getinstence()
 	{
 		return &_inst;
 	}

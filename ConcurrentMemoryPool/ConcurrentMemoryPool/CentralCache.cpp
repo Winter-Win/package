@@ -32,7 +32,7 @@ Span* CentralCache::GetOneSpan(SpanList& spanlist, size_t byte_size)
 
 
 	// 走到这儿，说明前面没有获取到span,都是空的，到下一层pagecache获取span
-	Span* newspan = PageCache::GetInstence()->NewSpan(SizeClass::NumMoveSize(byte_size));
+	Span* newspan = PageCache::GetInstence()->NewSpan(SizeClass::NumMovePage(byte_size));
 	// 将span页切分成需要的对象并链接起来
 	char* cur = (char*)(newspan->_pageid << PAGE_SHIFT);
 	char* end = cur + (newspan->_npage << PAGE_SHIFT);
@@ -111,9 +111,9 @@ void CentralCache::ReleaseListToSpans(void* start, size_t size)
 		//当一个span的对象全部释放回来的时候，将span还给pagecache,并且做页合并
 		if (--span->_usecount == 0)
 		{
-			spanlist.Erase(span);
-			PageCache::GetInstence()->ReleaseSpanToPageCache(span);
 			
+			PageCache::GetInstence()->ReleaseSpanToPageCache(span);
+			spanlist.Erase(span);
 		}
 
 		spanlist.Unlock();

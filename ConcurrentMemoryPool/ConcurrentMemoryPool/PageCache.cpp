@@ -117,8 +117,8 @@ void PageCache::ReleaseSpanToPageCache(Span* cur)
 		{
 			_idspanmap[next->_pageid + i] = cur;
 		}
-		delete next;
 
+		delete next;
 	}
 
 	_spanlist[cur->_npage].PushFront(cur);

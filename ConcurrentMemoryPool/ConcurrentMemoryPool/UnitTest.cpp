@@ -116,8 +116,7 @@ int main()
 	//TestThreadCache();
 	//TestCentralCache();
 	//TestPageCache();
-	TestConcurrentAllocFree();
-
+	//TestConcurrentAllocFree();
 
 	system("pause");
 	return 0;

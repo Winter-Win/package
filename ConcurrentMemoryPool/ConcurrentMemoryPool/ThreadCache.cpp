@@ -25,7 +25,7 @@ void* ThreadCache::FetchFromCentralCache(size_t index, size_t size)
 	size_t numtomove = min(SizeClass::NumMoveSize(size), maxsize);
 
 	void* start = nullptr, *end = nullptr;
-	size_t batchsize = CentralCache::Getinstance()->FetchRangeObj(start, end, numtomove, size);
+	size_t batchsize = CentralCache::Getinstence()->FetchRangeObj(start, end, numtomove, size);
 
 	if (batchsize > 1)
 	{
@@ -46,7 +46,7 @@ void ThreadCache::ListTooLong(Freelist* freelist, size_t size)
 	//打桩
 	//return nullptr;
 	void* start = freelist->PopRange();
-	CentralCache::Getinstance()->ReleaseListToSpans(start, size);
+	CentralCache::Getinstence()->ReleaseListToSpans(start, size);
 }
 
 //申请和释放内存对象
@@ -76,3 +76,5 @@ void ThreadCache::Deallocate(void* ptr, size_t size)
 		ListTooLong(freelist, size);
 	}
 }
+
+
