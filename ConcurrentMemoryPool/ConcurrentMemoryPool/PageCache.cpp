@@ -20,8 +20,15 @@ Span* PageCache::NewSpan(size_t n)
 			span->_pageid = span->_pageid + n;
 			span->_npage = span->_npage - n;
 
+			//splist->_pageid = span->_pageid + n;
+			//span->_npage = splist->_npage - n;
+			//span->_npage = n;
+
 			for (size_t i = 0; i < n; ++i)
 				_idspanmap[splist->_pageid + i] = splist;
+
+			//_spanlist[splist->_npage].PushFront(splist);
+			//return span;
 
 			_spanlist[span->_npage].PushFront(span);
 			return splist;

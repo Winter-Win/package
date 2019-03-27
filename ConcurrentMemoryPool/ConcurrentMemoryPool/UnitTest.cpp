@@ -110,14 +110,15 @@ void TestConcurrentAllocFree()
 	}
 }
 
-int main()
-{
-	//TestSize();
-	//TestThreadCache();
-	//TestCentralCache();
-	//TestPageCache();
-	//TestConcurrentAllocFree();
 
-	system("pause");
-	return 0;
-}
+//int main()
+//{
+//	//TestSize();
+//	//TestThreadCache();
+//	//TestCentralCache();
+//	//TestPageCache();
+//	TestConcurrentAllocFree();
+//
+//	system("pause");
+//	return 0;
+//}

@@ -21,4 +21,5 @@ public:
 
 //静态的，不是所有可见
 //每个线程有个自己的指针, 用(_declspec (thread))
+//每个线程都有自己的tlslist
 _declspec (thread) static ThreadCache* tlslist = nullptr;

@@ -186,6 +186,8 @@ public:
 	typedef long long PageID;
 #endif //_WIN32
 
+//Span是一个跨度，既可以分配内存出去，也是负责将内存回收回来到PageCache合并
+//是一链式结构，定义为结构体就行，避免需要很多的友元
 struct Span
 {
 	PageID _pageid = 0;//页号
@@ -200,7 +202,7 @@ struct Span
 	size_t _usecount = 0;//对象使用计数,
 };
 
-//双向带头循环的Span链表
+//和上面的Freelist一样，各个接口自己实现，双向带头循环的Span链表
 class SpanList
 {
 private:
@@ -228,7 +230,7 @@ public:
 		_head = nullptr;
 	}
 
-	//防止拷贝构造和赋值构造，将其封死，没有拷贝的必要
+	//防止拷贝构造和赋值构造，将其封死，没有拷贝的必要，不然就自己会实现浅拷贝
 	SpanList(const SpanList&) = delete;
 	SpanList& operator=(const SpanList&) = delete;
 

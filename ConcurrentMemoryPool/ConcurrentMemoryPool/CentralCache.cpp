@@ -52,6 +52,8 @@ Span* CentralCache::GetOneSpan(SpanList& spanlist, size_t byte_size)
 	return newspan;
 }
 
+
+//获取一个批量的内存对象
 size_t CentralCache::FetchRangeObj(void*& start, void*& end, size_t n, size_t byte_size)
 {
 	size_t index = SizeClass::Index(byte_size);
@@ -111,14 +113,13 @@ void CentralCache::ReleaseListToSpans(void* start, size_t size)
 		//当一个span的对象全部释放回来的时候，将span还给pagecache,并且做页合并
 		if (--span->_usecount == 0)
 		{
-			
-			PageCache::GetInstence()->ReleaseSpanToPageCache(span);
 			spanlist.Erase(span);
+			PageCache::GetInstence()->ReleaseSpanToPageCache(span);
+			
 		}
 
 		spanlist.Unlock();
 
 		start = next;
 	}
-
 }
