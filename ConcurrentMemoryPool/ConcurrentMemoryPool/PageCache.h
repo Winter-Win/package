@@ -11,6 +11,10 @@ public:
 		return &_inst;
 	}
 
+	Span* AllocBigPageObj(size_t size);
+	void FreeBigPageObj(void* ptr, Span* span);
+
+	Span* _NewSpan(size_t n);
 	Span* NewSpan(size_t n);//获取的是以页为单位
 
 	//获取从对象到span的映射
@@ -21,7 +25,10 @@ public:
 
 private:
 	SpanList _spanlist[NPAGES];
-	std::map<PageID, Span*> _idspanmap;
+	//std::map<PageID, Span*> _idspanmap;
+	std::unordered_map<PageID, Span*> _idspanmap;
+
+	std::mutex _mutex;
 private:
 	PageCache(){}
 

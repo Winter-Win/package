@@ -2,7 +2,63 @@
 
 PageCache PageCache::_inst;
 
+//大对象申请，直接从系统
+Span* PageCache::AllocBigPageObj(size_t size)
+{
+	assert(size > MAX_BYTES);
+
+	size = SizeClass::_Roundup(size, 12);
+	size_t npage = size >> PAGE_SHIFT;
+	if (npage < NPAGES)
+	{
+		Span* span = NewSpan(npage);
+		span->_objsize = size;
+		return span;
+	}
+	else
+	{
+		void* ptr = VirtualAlloc(0, npage << PAGE_SHIFT,
+			MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+
+		if (ptr == nullptr)
+			throw std::bad_alloc();
+
+		Span* span = new Span;
+		span->_npage = npage;
+		span->_pageid = (PageID)ptr >> PAGE_SHIFT;
+		span->_objsize = npage << PAGE_SHIFT;
+
+		_idspanmap[span->_pageid] = span;
+
+		return span;
+	}
+}
+
+void PageCache::FreeBigPageObj(void* ptr, Span* span)
+{
+	size_t npage = span->_objsize >> PAGE_SHIFT;
+	if (npage < NPAGES)
+	{
+		span->_objsize = 0;
+		ReleaseSpanToPageCache(span);
+	}
+	else
+	{
+		_idspanmap.erase(npage);
+		delete span;
+		VirtualFree(ptr, 0, MEM_RELEASE);
+	}
+}
+
 Span* PageCache::NewSpan(size_t n)
+{
+	std::unique_lock<std::mutex> lock(_mutex);
+	return _NewSpan(n);
+}
+
+
+
+Span* PageCache::_NewSpan(size_t n)
 {
 	assert(n < NPAGES);
 	if (!_spanlist[n].Empty())
@@ -36,15 +92,23 @@ Span* PageCache::NewSpan(size_t n)
 	}
 
 	Span* span = new Span;
+
+
+#ifdef _WIN32
 	void* ptr = VirtualAlloc(0, (NPAGES - 1)*(1 << PAGE_SHIFT), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+#else
+	//  brk
+#endif
+
+
 	span->_pageid = (PageID)ptr >> PAGE_SHIFT;
 	span->_npage = NPAGES - 1;
 
 	for (size_t i = 0; i < span->_npage; ++i)
 		_idspanmap[span->_pageid + i] = span;
 
-	_spanlist[span->_npage].PushFront(span);
-	return NewSpan(n);
+	_spanlist[span->_npage].PushFront(span);  //方括号
+	return _NewSpan(n);
 }
 
 // 获取从对象到span的映射
@@ -68,9 +132,9 @@ void PageCache::ReleaseSpanToPageCache(Span* cur)
 	// 向前合并
 	while (1)
 	{
-		//超过128页则不合并
-		if (cur->_npage >= NPAGES - 1)
-			break;
+		////超过128页则不合并
+		//if (cur->_npage > NPAGES - 1)
+		//	break;
 
 		PageID curid = cur->_pageid;
 		PageID previd = curid - 1;
@@ -85,6 +149,12 @@ void PageCache::ReleaseSpanToPageCache(Span* cur)
 			break;
 
 		Span* prev = it->second;
+
+		//超过128页则不合并
+		if (cur->_npage + prev->_npage > NPAGES - 1)
+			break;
+
+
 		// 先把prev从链表中移除
 		_spanlist[prev->_npage].Erase(prev);
 
@@ -104,18 +174,27 @@ void PageCache::ReleaseSpanToPageCache(Span* cur)
 	//向后合并
 	while (1)
 	{
-		//超过128页则不合并
-		if (cur->_npage >= NPAGES - 1)
-			break;
+		////超过128页则不合并
+		//if (cur->_npage > NPAGES - 1)
+		//	break;
 
 		PageID curid = cur->_pageid;
 		PageID nextid = curid + cur->_npage;
-		std::map<PageID, Span*>::iterator it = _idspanmap.find(nextid);
+		//std::map<PageID, Span*>::iterator it = _idspanmap.find(nextid);
+		auto it = _idspanmap.find(nextid);
 
 		if (it == _idspanmap.end())
 			break;
 
+		if (it->second->_usecount != 0)
+			break;
+
 		Span* next = it->second;
+
+		//超过128页则不合并
+		if (cur->_npage + next->_npage >= NPAGES - 1)
+			break;
+
 		_spanlist[next->_npage].Erase(next);
 
 		cur->_npage += next->_npage;

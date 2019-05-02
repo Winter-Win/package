@@ -59,8 +59,10 @@ size_t CentralCache::FetchRangeObj(void*& start, void*& end, size_t n, size_t by
 	size_t index = SizeClass::Index(byte_size);
 	SpanList& spanlist = _spanlist[index];//赋值->拷贝构造
 
-	//到时候记得加锁
-	spanlist.Lock();
+	////到时候记得加锁
+	//spanlist.Lock();
+	std::unique_lock<std::mutex> lock(spanlist._mutex);
+
 
 	Span* span = GetOneSpan(spanlist, byte_size);
 	//到这儿已经获取到一个newspan
@@ -91,7 +93,7 @@ size_t CentralCache::FetchRangeObj(void*& start, void*& end, size_t n, size_t by
 		spanlist.PushBack(span);
 	}
 
-	spanlist.Unlock();
+	//spanlist.Unlock();
 
 	return batchsize;
 }
@@ -100,12 +102,17 @@ void CentralCache::ReleaseListToSpans(void* start, size_t size)
 {
 	size_t index = SizeClass::Index(size);
 	SpanList& spanlist = _spanlist[index];
+
+	//将锁放在循环外面
+	//spanlist.Lock();
+	std::unique_lock<std::mutex> lock(spanlist._mutex);
+
 	while (start)
 	{
 		void* next = NEXT_OBJ(start);
 
-		//到时候记得加锁
-		spanlist.Lock();
+		////到时候记得加锁
+		//spanlist.Lock(); // 构成了很多的锁竞争
 
 		Span* span = PageCache::GetInstence()->MapObjectToSpan(start);
 		NEXT_OBJ(start) = span->_list;
@@ -115,11 +122,12 @@ void CentralCache::ReleaseListToSpans(void* start, size_t size)
 		{
 			spanlist.Erase(span);
 			PageCache::GetInstence()->ReleaseSpanToPageCache(span);
-			
 		}
 
-		spanlist.Unlock();
+		//spanlist.Unlock();
 
 		start = next;
 	}
+
+	//spanlist.Unlock();
 }

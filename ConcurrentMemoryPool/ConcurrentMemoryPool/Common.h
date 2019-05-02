@@ -4,6 +4,7 @@
 #include <thread>
 #include <mutex>
 #include <map>
+#include <unordered_map>
 #include <vector>
 #include <stdlib.h>
 #include <algorithm>
@@ -90,6 +91,7 @@ public:
 
 class SizeClass
 {
+public:
 	//获取Freelist的位置
 	inline static size_t _Index(size_t size, size_t align)
 	{
@@ -205,7 +207,7 @@ struct Span
 //和上面的Freelist一样，各个接口自己实现，双向带头循环的Span链表
 class SpanList
 {
-private:
+public:
 	Span* _head;
 	std::mutex _mutex;
 

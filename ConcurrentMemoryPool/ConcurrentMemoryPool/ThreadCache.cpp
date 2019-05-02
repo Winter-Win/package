@@ -45,6 +45,7 @@ void ThreadCache::ListTooLong(Freelist* freelist, size_t size)
 {
 	//´ò×®
 	//return nullptr;
+
 	void* start = freelist->PopRange();
 	CentralCache::Getinstence()->ReleaseListToSpans(start, size);
 }

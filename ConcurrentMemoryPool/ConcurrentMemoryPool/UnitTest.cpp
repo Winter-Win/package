@@ -39,7 +39,7 @@ void Alloc(size_t n)
 
 	for (size_t i = 0; i < n; ++i)
 	{
-		ConcurrentFree(v[i], 10);
+		ConcurrentFree(v[i]);
 		cout << v[i] << endl;
 	}
 	v.clear();
@@ -54,7 +54,7 @@ void Alloc(size_t n)
 
 	for (size_t i = 0; i < n; ++i)
 	{
-		ConcurrentFree(v[i], 10);
+		ConcurrentFree(v[i]);
 		cout << v[i] << endl;
 	}
 	v.clear();
@@ -100,14 +100,24 @@ void TestPageCache()
 
 void TestConcurrentAllocFree()
 {
-	size_t n = 100;
+	size_t n = 1000000;
 	std::vector<void*> v;
 	for (size_t i = 0; i < n; ++i)
 	{
 		void* ptr = ConcurrentAlloc(12);
 		v.push_back(ptr);
-		printf("obj:%d->%p\n", i, ptr);
+		//printf("obj:%d->%p\n", i, ptr);
+		//if (i == 2999999)
+		//{
+		//	printf("obj:%d->%p\n", i, ptr);
+		//}
 	}
+
+	for (size_t i = 0; i < n; ++i)
+	{
+		ConcurrentFree(v[i]);
+	}
+	cout << "hehe" << endl;
 }
 
 
