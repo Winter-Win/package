@@ -15,13 +15,13 @@ using std::endl;
 
 #include <Windows.h>
 
-const size_t MAX_BYTES = 64 * 1024;
-const size_t NLISTS = 184;
+const size_t MAX_BYTES = 64 * 1024; //ThreadCache 申请的最大内存
+const size_t NLISTS = 184; //数组总的有多少个
 const size_t PAGE_SHIFT = 12;
 const size_t NPAGES = 129;
 
 
-inline static void*& NEXT_OBJ(void* obj)//取对象头四个或者头八个字节
+inline static void*& NEXT_OBJ(void* obj)//取对象头四个或者头八个字节，void*的别名
 {
 	return *((void**)obj);
 }
@@ -30,7 +30,7 @@ inline static void*& NEXT_OBJ(void* obj)//取对象头四个或者头八个字节
 class Freelist
 {
 private:
-	void* _list = nullptr;
+	void* _list = nullptr; // 给上缺省值
 	size_t _size = 0;
 	size_t _maxsize = 1;
 
@@ -50,7 +50,7 @@ public:
 		_size += n;
 	}
 
-	void* Pop()
+	void* Pop() //把对象弹出去
 	{
 		void* obj = _list;
 		_list = NEXT_OBJ(obj);
@@ -89,13 +89,14 @@ public:
 	}
 };
 
+//专门用来计算大小位置的类
 class SizeClass
 {
 public:
 	//获取Freelist的位置
 	inline static size_t _Index(size_t size, size_t align)
 	{
-		size_t alignnum = 1 << align;
+		size_t alignnum = 1 << align;  //库里实现的方法
 		return ((size + alignnum - 1) >> align) - 1;
 	}
 
