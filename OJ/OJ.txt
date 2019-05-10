@@ -772,3 +772,29 @@ int main()
     cout << ret << endl;
     return 0;
 }
+
+
+16、替换空格
+https://www.nowcoder.com/practice/4060ac7e3e404ad1a894ef3e17650423?tpId=13&tqId=11155&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking
+
+请实现一个函数，将一个字符串中的每个空格替换成“%20”。例如，当字符串为We Are Happy.则经过替换之后的字符串为We%20Are%20Happy。
+
+class Solution {
+public:
+	void replaceSpace(char *str,int length) {
+        string s(str);
+        string ret;
+        auto it = s.begin();
+        while(it != s.end())
+        {
+            if(*it == ' ')
+                ret += "%20";
+            ret += *it;
+            it++;
+        }
+        int i = 0;
+        while((i = ret.find(' ',i)) > -1)
+            ret.erase(i, 1);
+        strcpy(str, ret.c_str());
+	}
+};
