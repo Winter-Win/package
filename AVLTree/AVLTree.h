@@ -10,7 +10,7 @@ struct AVLTreeNode
 	std::pair<K, V> _kv;
 	int _bf; //平衡因子
 
-	AVLTreeNode(const std::pair<int, int>& kv)
+	AVLTreeNode(const std::pair<K, V>& kv)
 		:_kv(kv)
 		, _left(nullptr)
 		, _right(nullptr)
@@ -33,13 +33,15 @@ public:
 
 	bool Insert(const std::pair<K, V>& kv)
 	{
-		if (_root = nullptr)
+		// 直接为空的时候，直接插入一个节点
+		if (_root == nullptr)
 		{
 			_root = new Node(kv);
 			_root->_bf = 0;
 			return true;
 		}
 
+		// 不为空
 		Node* parent = nullptr;
 		Node* cur = _root;
 		while (cur)
@@ -75,7 +77,7 @@ public:
 		// 更新平衡因子
 		while (parent)
 		{
-			if (cur = parent->_left)
+			if (cur == parent->_left)
 			{
 				parent->_bf--;
 			}
@@ -120,9 +122,16 @@ public:
 						RotateLR(parent);
 					}
 				}
-
+				/*else
+				{
+					assert(false);
+				}*/
 				break;
 			}
+			/*else
+			{
+				assert(false);
+			}*/
 		}
 		return true;
 	}
@@ -159,7 +168,7 @@ public:
 		}
 		subR->_parent = ppnode; // 统一处理subR的父亲更新
 
-		subR->_bf = parent->_bf = 0;
+		subR->_bf = parent->_bf = 0;  //更新平衡因子
 	}
 
 	void RotateR(Node* parent)  // 右单旋
@@ -194,10 +203,10 @@ public:
 		}
 		subL->_parent = ppnode; // 统一处理subL的父亲更新
 		
-		subL->_bf = parent->_bf = 0;
+		subL->_bf = parent->_bf = 0; //更新平衡因子
 	}
 
-	void RotateLR(Node* parent)
+	void RotateLR(Node* parent)  //左右旋
 	{
 		Node* subL = parent->_left;
 		Node* subLR = subL->_right;
@@ -223,7 +232,7 @@ public:
 		}
 	}
 
-	void RotateRL(Node* parent)
+	void RotateRL(Node* parent)  //右左旋
 	{
 		Node* subR = parent->_right;
 		Node* subRL = subR->_left;
@@ -264,6 +273,39 @@ public:
 		_Inorder(root->_right);
 	}
 	
+	bool IsBalance()
+	{
+		return _IsBalance(_root);
+	}
+
+	int Height(Node* root)
+	{
+		if (root == nullptr)
+			return 0;
+
+		int leftHeight = Height(root->_left);
+		int rightHeight = Height(root->_right);
+
+		return leftHeight > rightHeight ? leftHeight + 1 : rightHeight + 1;
+	}
+
+	bool _IsBalance(Node* root)
+	{
+		if (root == nullptr)
+			return true;
+
+		int leftHeight = Height(root->_left);
+		int rightHeight = Height(root->_right);
+		if (rightHeight - leftHeight != root->_bf)
+		{
+			cout << "平衡因子异常";
+			return false;
+		}
+
+		return abs(rightHeight - leftHeight) < 2 
+			&& _IsBalance(root->_left) 
+			&& _IsBalance(root->_right);
+	}
 
 };
 
@@ -274,8 +316,10 @@ void TestAVLTree()
 	for (auto e : a)
 	{
 		at.Insert(std::make_pair(e, e));
+		cout << at.IsBalance() << " -> " << e << endl;
 	}
 	at.Inorder();
+	cout << at.IsBalance() << endl;
 }
 
 
