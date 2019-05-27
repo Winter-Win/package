@@ -173,3 +173,51 @@ int main()
     cout << s << endl;
     return 0;
 }
+
+
+
+5、24进制转换为10进制
+
+#define _CRT_SECURE_NO_WARNINGS 1
+
+#include <iostream>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+string table = "0123456789abcdefghijklmn";
+
+size_t Many(char s)
+{
+	size_t i = 0;
+	for (i = 0; i < table.size(); ++i)
+	{
+		if (s == table[i])
+			break;
+	}
+	return i;
+}
+
+int main()
+{
+	int T;
+	while (cin >> T)
+	{
+		while (T--)
+		{
+			string M;
+			cin >> M;
+			reverse(M.begin(), M.end());
+			long long ret = 0;
+			for (size_t i = 0; i < M.size(); ++i)
+			{
+				size_t n = Many(M[i]);
+				ret += (long long)n * (pow(24, i));
+			}
+			cout << ret << endl;
+		}
+	}
+	system("pause");
+	return 0;
+}
