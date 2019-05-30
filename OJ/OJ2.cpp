@@ -297,3 +297,71 @@ int main()
     }
     return 0;
 }
+
+7、求最小公倍数
+https://www.nowcoder.com/practice/22948c2cad484e0291350abad86136c3?tpId=37&&tqId=21331&rp=1&ru=/activity/oj&qru=/ta/huawei/question-ranking
+
+题目描述
+正整数A和正整数B 的最小公倍数是指 能被A和B整除的最小的正整数值，设计一个算法，求输入A和B的最小公倍数。
+
+输入描述:
+输入两个正整数A和B。
+
+输出描述:
+输出A和B的最小公倍数。
+
+示例1
+输入
+5 
+7
+输出
+35
+
+#include<iostream>
+
+using namespace std;
+
+//先求最大公约数
+//辗转相除法
+//非递归
+int Gcd1(int a, int b)
+{
+    while(a % b)
+    {
+        int r = a;
+        a = b;
+        b = r % b;
+    }
+    return b;
+}
+
+//递归
+int Gcd2(int a, int b)
+{
+    if (b == 0)
+        return a;
+    return Gcd2(b, a % b);
+}
+
+//更相减损术
+//建议用辗转相除法，时间复杂度比更相减损术要低
+//递归
+int Gcd3(int a, int b)
+{
+    if(a > b)
+        return Gcd4(a - b, b);
+    else if(a < b)
+        return Gcd4(a, b - a);
+    else
+        return a;
+}
+
+int main()
+{
+    int A, B;
+    while(cin >> A >> B)
+    {
+        cout << A * B / Gcd1(A, B) << endl;
+    }
+     return 0;
+}
