@@ -365,3 +365,59 @@ int main()
     }
      return 0;
 }
+
+
+8、查找组成一个偶数最接近的两个素数
+https://www.nowcoder.com/practice/f8538f9ae3f1484fb137789dec6eedb9?tpId=37&&tqId=21283&rp=1&ru=/activity/oj&qru=/ta/huawei/question-ranking
+
+任意一个偶数（大于2）都可以由2个素数组成，组成偶数的2个素数有很多种情况，本题目要求输出组成指定偶数的两个素数差值最小的素数对
+输入描述:
+输入一个偶数
+
+输出描述:
+输出两个素数
+
+示例1
+输入
+20
+输出
+7
+13
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+bool isPrime(int num)
+{
+    int tmp = sqrt(num);
+    //只遍历到开方处，不能被开方左边的数整除，则一定不能被开方右边的数整除
+    for (int i = 2; i <= tmp; i++)
+    {
+        if (num %i == 0)
+            return false;
+    }
+    return true;
+}
+
+int main()
+{
+    int num;
+    int half;
+    int i;
+    while (cin >> num)
+    {
+        half = num / 2;
+        //从中间向两边找
+        for (i = half; i > 0; i--)
+        {
+            if(isPrime(i) && isPrime(num - i))
+                break;
+        }
+        cout << i << endl;
+        cout << num - i << endl;
+    }
+    return 0;
+}
