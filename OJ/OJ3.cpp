@@ -173,14 +173,13 @@ https://www.nowcoder.com/practice/8ef655edf42d4e08b44be4d777edbf43?tpId=37&amp;&
 
 #include <iostream>
 #include <vector>
-
 using namespace std;
 
-// 1
-// 1  1  1
-// 1  2  3  2  1
-// 1  3  6  7  6  3  1
-// 1  4  10 16 19 16 10  4  1
+//             1
+//          1  1  1
+//       1  2  3  2  1
+//    1  3  6  7  6  3  1
+// 1  4  10 16 19 16 10 4  1
 
 //  按照题目意思，可以发现第n行有2n -1个元素，第i,j元素等于上一行第j -2,j -1,j三列元素之和
 //  每一行的第一列和最后一列都为1，如果是第二列，则只是两个元素之和。
