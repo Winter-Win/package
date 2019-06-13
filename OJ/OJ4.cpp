@@ -76,3 +76,52 @@ int main()
     }
     return 0;
 }
+
+
+2、删除链表中等于给定值 val 的所有节点。https://leetcode-cn.com/problems/remove-linked-list-elements/
+示例:
+输入: 1->2->6->3->4->5->6, val = 6
+输出: 1->2->3->4->5
+
+C版本：
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+struct ListNode* removeElements(struct ListNode* head, int val) {
+    if(head == NULL)
+    {
+         return NULL;
+    }
+    
+    struct ListNode* cur = head;
+    struct ListNode* prev = NULL;
+    
+    while(cur)
+    {
+        struct ListNode* next = cur->next;
+        if(cur->val == val)
+        {
+            //如果prev还是为空的话，说明此时是在第一个
+            if(prev == NULL)
+            {
+                head = cur->next;
+            }
+            else
+            {
+                prev->next = cur->next;
+            }
+            free(cur);
+            cur = next;
+        }
+        else
+        {
+            prev = cur;
+            cur = cur->next;
+        }
+    }
+    return head;
+}
