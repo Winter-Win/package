@@ -470,3 +470,46 @@ int main()
     }
     return 0;
 }
+
+
+
+5、字符串反转
+https://www.nowcoder.com/practice/e45e078701ab4e4cb49393ae30f1bb04?tpId=37&&tqId=21235&rp=1&ru=/activity/oj&qru=/ta/huawei/question-ranking
+
+题目描述
+写出一个程序，接受一个字符串，然后输出该字符串反转后的字符串。例如：
+输入描述:
+输入N个字符
+
+输出描述:
+输出该字符串反转后的字符串
+
+示例1
+输入
+abcd
+输出
+dcba
+
+#include<string>
+#include<iostream>
+using namespace std;
+string reverseString(string s) {
+    if (s.empty())
+        return s;
+    size_t start = 0;
+    size_t end = s.size() - 1;
+    while (start < end)
+    {
+        swap(s[start], s[end]);
+        ++start;
+        --end;
+    }
+    return s;
+}
+int main()
+{
+    string s;
+    getline(cin, s);
+    cout << reverseString(s) << endl;
+    return 0;
+}
