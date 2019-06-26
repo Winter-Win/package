@@ -704,3 +704,51 @@ int main()
     }
     return 0;
 }
+
+
+9、找出字符串中第一个只出现一次的字符(题面已经更新)
+https://www.nowcoder.com/practice/e896d0f82f1246a3aa7b232ce38029d4?tpId=37&&tqId=21282&rp=1&ru=/activity/oj&qru=/ta/huawei/question-ranking
+
+题目描述
+找出字符串中第一个只出现一次的字符
+ 
+输入描述:
+输入一个非空字符串
+
+输出描述:
+输出第一个只出现一次的字符，如果不存在输出-1
+
+示例1
+输入
+asdfasdfo
+输出
+o
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main()
+{
+    string str;
+    while(cin >> str)
+    {
+        int hashcount[256] = {0};
+        //  计数
+        for(const auto& ch : str)
+            hashcount[ch]++;
+        //  查找
+        size_t i = 0;
+        for(i = 0; i < str.size(); ++i)
+        {
+            if(hashcount[str[i]] == 1)
+            {
+                cout << str[i] << endl;
+                break;
+            }
+        }
+        if(i >= str.size())
+            cout << -1 << endl;
+    }
+    return 0;
+}
