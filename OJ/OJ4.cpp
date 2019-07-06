@@ -296,3 +296,59 @@ int main()
 	system("pause");
 	return 0;
 }
+
+
+5、有假币
+https://www.nowcoder.com/questionTerminal/1d18c0841e64454cbc3afaea05e2f63c
+
+链接：https://www.nowcoder.com/questionTerminal/1d18c0841e64454cbc3afaea05e2f63c
+来源：牛客网
+
+居然有假币！ 现在猪肉涨了，但是农民的工资却不见涨啊，没钱怎么买猪肉啊。nowcoder这就去买猪肉，结果找来的零钱中有假币！！！可惜nowcoder 一不小心把它混进了一堆真币里面去了。只知道假币的重量比真币的质量要轻，给你一个天平（天平两端能容纳无限个硬币），请用最快的时间把那个可恶的假币找出来。
+
+输入描述:
+1≤n≤2^30,输入0结束程序。
+
+
+输出描述:
+最多要称几次一定能把那个假币找出来？
+示例1
+输入
+3
+12
+0
+输出
+1
+3
+
+// write your code here cpp
+#include <stdio.h>
+
+//  首先要最快时间找出来，本来想用二分查找，
+//  但是发现分三堆是最快的，而且是合理的，
+//  用两堆称，就可判断，我们只需要找出来即可
+
+int main()
+{
+    int n = 0;
+    while(scanf("%d", &n) != EOF)
+    {
+        int count = 0;
+        if(n == 0)
+            break;
+        while(n > 1)
+        {
+            if(n % 3 != 0)
+            {
+                n = n / 3 + 1;
+            }
+            else
+            {
+                n /= 3;
+            }
+            count++;
+        }
+        printf("%d\n", count);
+    }
+    return 0;
+}
