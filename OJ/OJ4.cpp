@@ -562,3 +562,128 @@ int main()
     
     return 0;
 }
+
+
+10、淘宝网店
+https://www.nowcoder.com/questionTerminal/754921e9c98b43d1b2d70c227b844101
+
+链接：https://www.nowcoder.com/questionTerminal/754921e9c98b43d1b2d70c227b844101
+来源：牛客网
+
+NowCoder在淘宝上开了一家网店。他发现在月份为素数的时候，当月每天能赚1元；否则每天能赚2元。
+现在给你一段时间区间，请你帮他计算总收益有多少。
+
+输入描述:
+输入包含多组数据。
+
+每组数据包含两个日期from和to (2000-01-01 ≤ from ≤ to ≤ 2999-12-31)。
+
+日期用三个正整数表示，用空格隔开：year month day。
+
+
+输出描述:
+对应每一组数据，输出在给定的日期范围（包含开始和结束日期）内能赚多少钱。
+示例1
+输入
+2000 1 1 2000 1 31
+2000 2 1 2000 2 29
+输出
+62
+29
+
+#include <iostream>
+using namespace std;
+
+// 每月天数，不考虑闰年，从 0 开始
+inline int DayOfMonth(int month)
+{
+    const static int days[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+    return days[month];
+}
+// 判断是否是闰年
+inline bool IsLeapYear(int year)
+{
+    if (year % 4 == 0 && year % 100 != 0)
+    {
+        return true;
+    }
+    if (year % 400 == 0)
+    {
+        return true;
+    }
+    return false;
+}
+// 一年的收益，不考虑闰年
+inline int ProfitOfYear()
+{
+    return 2*31 + 1*28 + 1*31 + 2*30
+         + 1*31 + 2*30 + 1*31 + 2*31
+         + 2*30 + 2*31 + 1*30 + 2*31;
+}
+// 判断月份是否是素数，从 0 开始
+inline bool Prime(int month)
+{
+    const static bool p[] = { false, true, true, false, true, false, 
+                              true, false, false, false, true, false };
+    return p[month];
+}
+
+int main()
+{
+    int year1, month1, day1, year2, month2, day2;
+    while (cin >> year1 >> month1 >> day1 >> year2 >> month2 >> day2)
+    {
+        int profit = 0;
+        int year = year1;
+        // 计算完整年份的收益
+        for (int y = year1; y <= year2 - 1; ++y)
+        {
+            profit += ProfitOfYear();
+            if (IsLeapYear(y))
+            {
+                profit += 1;
+            }
+        }
+        // 减去多计算的 year1 从 1月(0) 到 month1 的收益
+        for (int month = 0; month < month1; ++month)
+        {
+            int days;
+            if (month == month1 - 1)
+            {
+                // 这个月不完整
+                days = day1 - 1;
+            }
+            else
+            {
+                days = DayOfMonth(month);
+                if (month == 1 && IsLeapYear(year1))
+                {
+                    days += 1;
+                }
+            }
+            int profit_of_month = days * (Prime(month) ? 1 : 2);
+            profit -= profit_of_month;
+         }
+         // 加上少计算的 year2 从 1月(0) 到 month2 的收益
+         for (int month = 0; month < month2; ++month)
+         {
+            int days;
+            if (month == month2 - 1) {
+               // 这个月不完整
+               days = day2;
+            }
+            else
+            {
+                days = DayOfMonth(month);
+                if (month == 1 && IsLeapYear(year2))
+                {
+                    days += 1;
+                }
+            }
+            int profit_of_month = days * (Prime(month) ? 1 : 2);
+            profit += profit_of_month;
+        }
+        cout << profit << endl;;
+    }
+    return 0;
+}
